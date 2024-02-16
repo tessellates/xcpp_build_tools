@@ -1,0 +1,39 @@
+# Set the default behavior, in case users don't have core.autocrlf set.
+* text=auto eol=lf
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.txt text
+*.md text
+*.html text
+*.css text
+*.js text
+*.json text
+*.xml text
+*.yml text
+*.yaml text
+
+# Ensure Windows-specific files use CRLF line endings on checkout.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Define binary files - these will not be modified in any way.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.bin binary
+*.pdf binary
+*.zip binary
+*.exe binary
+*.dll binary
+
+# Diff settings for specific files.
+*.txt diff
+*.md diff=markdown
+
+# Custom attributes
+# Example: Denoting documentation files to be linguistically reviewed.
+docs/**/*.md linguist-language=Markdown
