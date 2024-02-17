@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import shutil
 import cmake_utils
 import utilx
 import os_build_scripts.posix_make as mkx
@@ -13,6 +14,7 @@ class XBuild:
         self.cmake_build_command = None
         self.cmake_configure_command = None
         self.run = False
+        self.do_build = True
         self.myenv = myenv = dict(os.environ)
 
     def _load_config(self) -> None:
@@ -21,12 +23,15 @@ class XBuild:
         with open(self.config_file, 'r') as file:
             self.config = json.load(file)
 
-        self.build_dir = os.path.join(self.config['builddir'], self.config['debugdir'] if self.config['currentConfig'] == 'debug' else self.config['optdir'])
+        self.build_type_dir = self.config['debugdir'] if self.config['currentConfig'] == 'debug' else self.config['optdir']
+        self.build_dir = self.config['builddir']
         self._generate_cmake_commands()
 
         for envvars in self.config['env']:
             myenv[envvars['name']] = envvars['value'] # Change this to a different driver!
 
+    def _target_dir(self, target) -> str:
+        return os.path.join(self.build_dir, target['path'], self.build_type_dir)
     
     def _generate_cmake_commands(self): 
         self.cmake_configure_command = [self.config['cmake']]
@@ -62,6 +67,10 @@ class XBuild:
             print("No args")
             return
 
+        if 'no-build' in args:
+            self.do_build = False
+            args.remove('no-build')
+
         if 'run' in args:
             self.run = True
             args.remove('run')
@@ -95,17 +104,19 @@ class XBuild:
             print(f"Cleaned build directory: {self.build_dir}")
 
     def build_target(self, target):
-        mkx.configure_target(target, self.build_dir, self.cmake_configure_command)
-        mkx.build_target(target, self.build_dir, self.cmake_build_command)
+        target_dir = self._target_dir(target)
+        if self.do_build:
+            mkx.configure_target(target, target_dir, self.cmake_configure_command)
+            mkx.build_target(target, target_dir, self.cmake_build_command)
         if self.run:
-            self.run_target(target)
+            self.run_target(target, target_dir)
 
     def build_all_targets(self):
         for target in self.config['targets']:
             self.build_target(target)
 
-    def run_target(self, target):
-        mkx.run_target(target, self.build_dir, self.myenv)
+    def run_target(self, target, target_dir):
+        mkx.run_target(target, target_dir, self.myenv)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Build system for C++ projects using CMake.")
