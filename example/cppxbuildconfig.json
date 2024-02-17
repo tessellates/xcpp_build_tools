@@ -1,0 +1,20 @@
+{
+    "cmake": "cmake",
+    "currentConfig": "opt",
+    "builddir": "build",
+    "debugdir": "Debug",
+    "optdir": "Release",
+    "targets": [
+        {
+            "name": "example",
+            "path": "."
+        },
+        {
+            "name": "example_magnus",
+            "path": "magnus"
+        }
+    ],
+    "cmake_actions": [],
+    "default_cmake_variables": [],
+    "env": []
+}
