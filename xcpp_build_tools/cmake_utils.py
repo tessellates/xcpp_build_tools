@@ -3,7 +3,8 @@ import os
 
 def find_cmake_projects(start_path) -> list:
     targets = []
-    for root, dirs, files in os.walk(start_path):
+    for root, dirs, files in os.walk(start_path, topdown=True):
+        dirs[:] = [d for d in dirs if not d.startswith('_')]
         if 'CMakeLists.txt' in files:
             cmake_path = os.path.join(root, 'CMakeLists.txt')
             project_name = parse_project_name(cmake_path)
