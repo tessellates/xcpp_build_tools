@@ -2,9 +2,9 @@ import argparse
 import json
 import os
 import shutil
-import cmake_utils
-import utilx
-import os_build_scripts.posix_make as mkx
+from . import cmake_utils
+from . import utilx
+from .os_build_scripts import posix_make as mkx
 #from os_specific import build_ops
 
 class XBuild:
@@ -90,12 +90,20 @@ class XBuild:
             args.remove('all')
         
         for arg in args:
-            if any(t['name'] == arg for t in self.config['targets']):
-                self.build_target(t)
-            elif any(a['name'] == arg for a in self.config['cmake_actions']):
-                self.apply_action(a)
-            else:
-                print(f"Invalid argument: {arg}")
+            # Attempt to find a matching target
+            target = next((t for t in self.config['targets'] if t['name'] == arg), None)
+            if target is not None:
+                self.build_target(target)
+                continue  # Proceed to the next arg
+
+            # Attempt to find a matching action
+            action = next((a for a in self.config['cmake_actions'] if a['name'] == arg), None)
+            if action is not None:
+                self.apply_action(action)
+                continue  # Proceed to the next arg
+
+            # If neither, print an error
+            print(f"Invalid argument: {arg}")
 
 
     def clean_build_directory(self):
