@@ -28,7 +28,7 @@ class XBuild:
         self._generate_cmake_commands()
 
         for envvars in self.config['env']:
-            myenv[envvars['name']] = envvars['value'] # Change this to a different driver!
+            self.myenv[envvars['name']] = envvars['value'] # Change this to a different driver!
 
     def _target_dir(self, target) -> str:
         return os.path.join(self.build_dir, target['path'], self.build_type_dir)
