@@ -20,14 +20,19 @@ def build_target(target, target_dir, bcmake_build_command) -> None:
 def run_target(target, target_dir, myenv) -> None:
     try:
         cmd = os.path.join(".", target_dir, "main")
-        subprocess.Popen( cmd, shell = True, env=myenv )
-        print(f"Ran '{cmd}'")
-        return
+        if os.path.exists(cmd):
+            subprocess.Popen( cmd, shell = True, env=myenv )
+            print(f"Ran '{cmd}'")
+            return
     except Exception as e:
         pass
     
     try:
         cmd = os.path.join(".", target_dir, target['exe'])
+        if os.path.exists(cmd):
+            subprocess.Popen( cmd, shell = True, env=myenv )
+            print(f"Ran '{cmd}'")
+            return
         subprocess.Popen( cmd, shell = True, env=myenv )
         print(f"Ran '{cmd}'")
         return
